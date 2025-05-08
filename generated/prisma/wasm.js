@@ -125,10 +125,23 @@ exports.Prisma.UserScalarFieldEnum = {
   documentId: 'documentId',
   firstname: 'firstname',
   lastname: 'lastname',
+  age: 'age',
+  gender: 'gender',
   email: 'email',
   password: 'password',
   phoneNumber: 'phoneNumber',
   imageUrl: 'imageUrl',
+  role: 'role',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.StudentScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  level: 'level',
+  grade: 'grade',
+  section: 'section',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -142,10 +155,14 @@ exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 };
-
+exports.Role = exports.$Enums.Role = {
+  STUDENT: 'STUDENT',
+  TEACHER: 'TEACHER'
+};
 
 exports.Prisma.ModelName = {
-  User: 'User'
+  User: 'User',
+  Student: 'Student'
 };
 
 /**

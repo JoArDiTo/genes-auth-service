@@ -33,10 +33,10 @@ export class UserService extends PrismaClient implements OnModuleInit {
       
       throw new RpcException({
         status: 400,
-        message: `The ${conflicField} ${existingUser[conflicField].toString()} already exists`,
+        message: `The ${conflicField} ${existingUser[conflicField]} already exists`,
       });
     }
-
+  
     const newUser = await this.user.create({
       data: {
         ...registerUserDto,
@@ -62,7 +62,7 @@ export class UserService extends PrismaClient implements OnModuleInit {
       message: 'Password is incorrect'
     });
 
-    const user = { id: exist.id, firstname: exist.firstname, email: exist.email };
+    const user = { id: exist.id, firstname: exist.firstname, email: exist.email, role: exist.role };
 
     return { 
       user: user,
@@ -72,10 +72,7 @@ export class UserService extends PrismaClient implements OnModuleInit {
 
   async verify(token: string) {
     try {
-      const { sub:_, iat:__, exp:___, ...user } = this.jwtService.verify(token, {
-        secret: envs.jwtSecret,
-
-      });
+      const { sub:_, iat:__, exp:___, ...user } = this.jwtService.verify(token, { secret: envs.jwtSecret });
 
       return user;
     } catch (error) {
@@ -97,12 +94,12 @@ export class UserService extends PrismaClient implements OnModuleInit {
 
   async update(token:string, updateUserDto: UpdateUserDto) {
     const { id } = this.jwtService.verify(token, { secret: envs.jwtSecret });
-    const { token:_, password:__, ...data } = updateUserDto;
+    const { token:_, password:__, role:___, ...data } = updateUserDto;
+    
+    const userModified = await this.user.update({ where: { id }, data: data })
+    const { password:____, ...exist} = userModified
 
-    return this.user.update({
-      where: { id },
-      data: data
-    })
+    return exist
   }
 
   signJwt(payload: JwtPayload) {

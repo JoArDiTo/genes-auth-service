@@ -14,6 +14,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  STUDENT
+  TEACHER
+}
+
 model User {
   @@map("USERS")
   
@@ -21,12 +26,31 @@ model User {
   documentId    String    @unique @map("document_id")
   firstname     String
   lastname      String
+  age           Int
+  gender        String
   email         String    @unique
   password      String
   phoneNumber   String    @map("phone_number")
   imageUrl      String    @map("image_url")
+  role          Role      @default(STUDENT)
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  student       Student?
+}
+
+model Student {
+  @@map("STUDENTS")
+  
+  id            String    @id @default(uuid())
+  userId        String    @unique  @map("user_id")
+  level         String
+  grade         Int
+  section       String
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  user          User      @relation(fields: [userId], references: [id])
 }
 
 

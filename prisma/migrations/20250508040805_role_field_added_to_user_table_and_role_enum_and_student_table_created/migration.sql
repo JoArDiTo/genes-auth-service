@@ -1,0 +1,24 @@
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('STUDENT', 'TEACHER');
+
+-- AlterTable
+ALTER TABLE "USERS" ADD COLUMN     "role" "Role" NOT NULL DEFAULT 'STUDENT';
+
+-- CreateTable
+CREATE TABLE "STUDENTS" (
+    "id" TEXT NOT NULL,
+    "user_id" TEXT NOT NULL,
+    "level" TEXT NOT NULL,
+    "grade" TEXT NOT NULL,
+    "section" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "STUDENTS_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "STUDENTS_user_id_key" ON "STUDENTS"("user_id");
+
+-- AddForeignKey
+ALTER TABLE "STUDENTS" ADD CONSTRAINT "STUDENTS_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "USERS"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

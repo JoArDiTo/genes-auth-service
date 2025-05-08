@@ -20,6 +20,8 @@ model User {
   documentId  String   @unique @map("document_id")
   firstname   String
   lastname    String
+  age         Int
+  gender      String
   email       String   @unique
   password    String
   phoneNumber String   @map("phone_number")
