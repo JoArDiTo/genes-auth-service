@@ -5,9 +5,10 @@ import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
 import { envs } from 'src/config';
 import { RpcException } from '@nestjs/microservices';
-import { PrismaClient } from 'generated/prisma';
+import { PrismaClient, Role } from 'generated/prisma';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
+
 @Injectable()
 export class UserService extends PrismaClient implements OnModuleInit {
   async onModuleInit() {
@@ -86,10 +87,30 @@ export class UserService extends PrismaClient implements OnModuleInit {
   async getProfile(token: string) {
     const { id } = this.jwtService.verify(token, { secret: envs.jwtSecret });
 
-    //@ts-ignore
-    const { password:_, ...exist } = await this.user.findUnique({ where: { id: id }});
+    const user = await this.user.findUnique({ where: { id: id }});
+    if (!user) throw new RpcException({
+      status: 400,
+      message: 'User not found'
+    });
 
-    return exist;
+    const { password:_, createdAt:__, updatedAt:___, ...existUser } = user
+
+    if (user.role === Role.STUDENT) {
+      const student = await this.student.findUnique({ where: { userId: user.id }});
+      if (!student) throw new RpcException({
+        status: 400,
+        message: 'Student not found'
+      });
+
+      const { userId:____ ,createdAt:_____, updatedAt:______, ...existStudent } = student
+      
+      return {
+        userData: existUser,
+        studentData: existStudent
+      }
+    }    
+
+    return { userData: existUser };
   }
 
   async update(token:string, updateUserDto: UpdateUserDto) {
