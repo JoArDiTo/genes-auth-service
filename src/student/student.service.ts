@@ -55,26 +55,24 @@ export class StudentService extends PrismaClient implements OnModuleInit {
   }
 
   async findOne(id: string) {
-    const student = await this.student.findUnique({ 
-      select: { id:true, userId:true, level:true, grade:true, section:true },
+    const user = await this.user.findUnique({
+      select: { id:true, documentId:true, firstname:true, lastname:true, age:true, gender:true, email:true, phoneNumber:true, imageUrl:true },
       where: { id: id }
+    })
+
+    const student = await this.student.findUnique({ 
+      select: { id:true, level:true, grade:true, section:true },
+      where: { userId: id }
     });
 
     if (!student) throw new RpcException({
       status: 400,
-      message: `Student with id ${ id } does not exist`
+      message: `Student with user id ${ id } does not exist`
     })
-    
-    const user = await this.user.findUnique({
-      select: { id:true, documentId:true, firstname:true, lastname:true, age:true, gender:true, email:true, phoneNumber:true, imageUrl:true },
-      where: { id: student.userId }
-    });
-
-    const { userId:_, ...studentData } = student
 
     return {
       user,
-      student: studentData
+      student
     };
   }
 
